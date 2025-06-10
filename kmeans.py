@@ -47,7 +47,7 @@ def kmeans_loss(X, C, z):
     
     return 
 
-def kmeans(X, K, algo=0):
+def kmeans(X, K: int, algo=0):
     """ Cluster data X into K converged clusters.
     
         X: an N-by-M numpy ndarray, where we want to assign each
@@ -62,17 +62,30 @@ def kmeans(X, K, algo=0):
     """
     N = X.shape[0]
 
-    # TODO: Initialize K cluster centers based on the type of initialization. 
+    # Initialize K cluster centers based on the type of initialization. 
     # We gave you the random initialization below. **DO NOT CHANGE IT** 
     # otherwise we cannot guarantee that your solution will work with the autograder
 
     C = X[np.random.choice(N, size=K, replace=False)]
+    if algo == 1:
+        C = kmpp_init(X, K)
 
-    # TODO: Initialize z 
+    # z is a vector represents the center for each data points. shape: (N, 1)
+    z = np.zeros(N)
     
-    # TODO: Write the k-means algorithm below
+    # Write the k-means algorithm below
+    while True:
+        stacked_X = np.stack([X] * K, axis=1)
+        distance = np.sum(np.square(stacked_X - C), axis=2)
+        
+        new_z = np.argmin(distance, axis=1)
+        if np.all(new_z == z):
+            break
+        z = new_z
+        
+        C = np.array([np.mean(X[new_z == k], axis=0) for k in np.unique(new_z)])
 
-    return
+    return C, z
 
 
 if __name__ == '__main__':
