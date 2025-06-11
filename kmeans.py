@@ -53,8 +53,9 @@ def kmeans_loss(X, C, z):
     """
 
     # TODO: calculate the k-means loss
-    
-    return 
+
+    # coordinate - coordinate of center(get from z and C)
+    return np.mean(np.sum(np.square(X - C[z]), axis=1))
 
 def kmeans(X, K: int, algo=0):
     """ Cluster data X into K converged clusters.
@@ -116,6 +117,8 @@ if __name__ == '__main__':
     C, z = kmeans(train_data, K, algo)
 
     np.savetxt(args.train_out, z, delimiter=",")
+
+    print(f"Loss = {kmeans_loss(train_data, C, z)}")
 
 
     # TODO: uncomment the following code to graph your cluster centers after you pass the autograder
