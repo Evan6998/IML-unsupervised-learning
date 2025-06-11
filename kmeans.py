@@ -28,8 +28,17 @@ def kmpp_init(X, K):
     N = X.shape[0]
     C = []
     C.append(X[np.random.randint(N)])
+
+    for _ in range(K - 1):
+        num_centers = len(C)
+        stacked_X = np.stack([X] * num_centers, axis=1)
+        distance_to_all_centers = np.sum(np.square(stacked_X - C), axis=2)
+        distance_to_closest_center = np.min(distance_to_all_centers, axis=1)
+        idx = np.random.choice(N, p=distance_to_closest_center / np.sum(distance_to_closest_center))
+
+        C.append(X[idx])
     
-    return 
+    return C
 
 def kmeans_loss(X, C, z):
     """ Compute the K-means loss.
@@ -66,9 +75,7 @@ def kmeans(X, K: int, algo=0):
     # We gave you the random initialization below. **DO NOT CHANGE IT** 
     # otherwise we cannot guarantee that your solution will work with the autograder
 
-    C = X[np.random.choice(N, size=K, replace=False)]
-    if algo == 1:
-        C = kmpp_init(X, K)
+    C = X[np.random.choice(N, size=K, replace=False)] if algo == 0 else kmpp_init(X, K)
 
     # z is a vector represents the center for each data points. shape: (N, 1)
     z = np.zeros(N)
